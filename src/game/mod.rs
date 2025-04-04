@@ -502,17 +502,21 @@ fn make_enemy(mut commands: Commands, materials: Res<Materials>) {
         });
 }
 
-fn make_ball(mut commands: Commands, materials: Res<Materials>) {
+fn make_ball(mut commands: Commands, materials: Res<Materials>, asset_server: Res<AssetServer>) {
     let alpha = 1.0 / BALL_GHOSTS_COUNT as f32;
     commands
         .spawn((
-            SpriteBundle {
-                transform: Transform::from_xyz(0.0, 0.0, -1.0),
-                texture: materials.ball.clone(),
-                sprite: Sprite {
-                    color: Color::rgba(1.0, 1.0, 1.0, alpha),
-                    ..Default::default()
-                },
+            Text2dBundle {
+                text: Text::from_section(
+                    "中",
+                    TextStyle {
+                        font: asset_server.load(FONT_LXGW),
+                        font_size: 20.0,
+                        color: Color::WHITE,
+                    },
+                )
+                .with_alignment(TextAlignment::CENTER),
+                transform: Transform::from_xyz(0.0, 0.0, 0.0),
                 ..Default::default()
             },
             RigidBody::new(Vec2::new(BALL_SIZE, BALL_SIZE), 1.0, 1.0, 0.5),
@@ -525,7 +529,7 @@ fn make_ball(mut commands: Commands, materials: Res<Materials>) {
         .with_children(|parent| {
             for _ in 0..BALL_GHOSTS_COUNT {
                 parent.spawn(SpriteBundle {
-                    texture: materials.ball.clone(),
+                    // texture: materials.ball.clone(),
                     sprite: Sprite {
                         color: Color::rgba(1.0, 1.0, 1.0, alpha),
                         ..Default::default()
