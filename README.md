@@ -1,4 +1,7 @@
-# Bounce Up!
+# Bounce Typer!
+Originally forked from https://github.com/cryscan/summer-jam, this project is being used for Chinese typing practice.
+
+# Bounce up!
 This is a game made during the 2021 summer jam. It is written in [rust](https://www.rust-lang.org/) and is powered by [bevy engine](https://bevyengine.org/).
 
 Live version is available [here](https://cryscan.itch.io/bounce-up).
