@@ -4,7 +4,10 @@ use super::{
     physics::{CollisionEvent, Motion},
 };
 use crate::{constants::*, utils::Damp, TimeScale};
-use bevy::{input::mouse::MouseMotion, prelude::*};
+use bevy::{
+    input::{keyboard::KeyboardInput, mouse::MouseMotion},
+    prelude::*,
+};
 use std::{ops::Add, time::Duration};
 
 #[derive(Component)]
@@ -64,6 +67,12 @@ pub fn move_player(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut mouse_motion_events: EventReader<MouseMotion>,
+    keyboard_input: Res<Input<KeyCode>>,
+    mut text_querys: ParamSet<(
+        Query<&mut Text, With<Ball>>,
+        Query<&mut Text>,
+    )>,
+    player_query: Query<&Children, With<Player>>,
     mut query: Query<(&Player, &Controller, &mut MotionOverride, &mut Motion)>,
 ) {
     let delta = mouse_motion_events
@@ -86,6 +95,22 @@ pub fn move_player(
             .velocity
             .damp(velocity, damp, delta_seconds)
             .clamp_length_max(player.max_speed);
+    }
+
+    if keyboard_input.pressed(KeyCode::Space) {
+        info!("prepass space");
+        for text in text_querys.p0().iter() {
+            println!("ball text is {}", text.sections[0].value);
+        }
+
+        for children in player_query.iter() {
+            for &child in children.iter() {
+                if let Ok(text) = text_querys.p1().get_mut(child) {
+                    // text.sections[0].value = "New Text".to_string();
+                    println!("edit text is {}", text.sections[0].value);
+                }
+            }
+        }
     }
 }
 
