@@ -430,7 +430,7 @@ fn make_ui(mut commands: Commands, materials: Res<Materials>, asset_server: Res<
         });
 }
 
-fn make_player(mut commands: Commands, materials: Res<Materials>) {
+fn make_player(mut commands: Commands, materials: Res<Materials>, asset_server: Res<AssetServer>) {
     commands
         .spawn((
             SpriteBundle {
@@ -452,6 +452,21 @@ fn make_player(mut commands: Commands, materials: Res<Materials>) {
             PlayerAssist::default(),
             Cleanup,
         ))
+        .with_children(|parent| {
+            parent.spawn(Text2dBundle {
+                text: Text::from_section(
+                    "ro",
+                    TextStyle {
+                        font: asset_server.load(FONT_LXGW),
+                        font_size: 24.0,
+                        color: Color::WHITE,
+                    },
+                )
+                .with_alignment(TextAlignment::CENTER),
+                transform: Transform::from_xyz(0.0, 0.0, 0.0),
+                ..Default::default()
+            });
+        })
         .with_children(|parent| {
             parent.spawn(SpriteBundle {
                 transform: Transform::from_xyz(-PADDLE_WIDTH / 2.0 + 8.0, 0.0, 0.1),
@@ -511,7 +526,7 @@ fn make_ball(mut commands: Commands, materials: Res<Materials>, asset_server: Re
                     "中",
                     TextStyle {
                         font: asset_server.load(FONT_LXGW),
-                        font_size: 20.0,
+                        font_size: 24.0,
                         color: Color::WHITE,
                     },
                 )
