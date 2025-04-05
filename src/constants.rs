@@ -1,7 +1,7 @@
 use bevy::{prelude::*, render::view::RenderLayers};
 
-pub const ARENA_WIDTH: f32 = 480.0;
-pub const ARENA_HEIGHT: f32 = 640.0;
+pub const ARENA_WIDTH: f32 = 750.0;
+pub const ARENA_HEIGHT: f32 = 1000.0;
 
 pub const DEATH_EFFECT_LAYER: RenderLayers = RenderLayers::layer(1);
 
@@ -74,7 +74,7 @@ pub const PHYSICS_TIME_STEP: f32 = 1.0 / 180.0;
 
 pub const PADDLE_WIDTH: f32 = 96.0;
 pub const PADDLE_HEIGHT: f32 = 16.0;
-pub const BALL_SIZE: f32 = 16.0;
+pub const BALL_SIZE: f32 = 20.0;
 
 pub const PLAYER_MAX_SPEED: f32 = 2000.0;
 pub const PLAYER_SENSITIVITY: f32 = 0.5;
