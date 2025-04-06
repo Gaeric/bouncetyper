@@ -31,6 +31,7 @@ impl Plugin for GamePlugin {
             .add_event::<PlayerMissEvent>()
             .add_event::<BounceEvent>()
             .add_event::<HealEvent>()
+            .add_event::<ConfirmEvent>()
             .insert_resource(Debounce {
                 audio_bounce_long: Timer::from_seconds(0.5, TimerMode::Once),
                 audio_bounce_short: Timer::from_seconds(0.1, TimerMode::Once),
@@ -49,6 +50,8 @@ impl Plugin for GamePlugin {
                 SystemSet::new()
                     // fundamental game-play systems
                     .with_system(move_player)
+                    .with_system(handle_input)
+                    .with_system(add_location_target)
                     .with_system(assist_player)
                     .with_system(move_enemy)
                     .with_system(move_ball)
@@ -465,7 +468,7 @@ fn make_player(mut commands: Commands, materials: Res<Materials>, asset_server: 
                 .with_alignment(TextAlignment::CENTER),
                 transform: Transform::from_xyz(0.0, 0.0, 0.0),
                 ..Default::default()
-            });
+            }).insert(InputCodes);
         })
         .with_children(|parent| {
             parent.spawn(SpriteBundle {

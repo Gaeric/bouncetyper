@@ -63,15 +63,67 @@ impl Default for PlayerAssist {
     }
 }
 
+#[derive(Component)]
+pub struct InputCodes;
+
+pub struct ConfirmEvent {
+    pub codes: String,
+}
+
+pub fn handle_input(
+    mut events: EventReader<ReceivedCharacter>,
+    mut confirm_event: EventWriter<ConfirmEvent>,
+    mut edit_text: Query<&mut Text, With<InputCodes>>,
+    query: Query<(Entity, &Player, With<LocationTarget>)>,
+) {
+    if edit_text.is_empty() {
+        return;
+    }
+
+    for event in events.iter() {
+        if event.char == ' ' {
+            println!("send confirm event");
+            if !query.is_empty() {
+                println!("already have location target");
+                return;
+            }
+            confirm_event.send(ConfirmEvent {
+                codes: edit_text.single_mut().sections[0].value.clone(),
+            });
+            edit_text.single_mut().sections[0].value.clear();
+        } else {
+            edit_text.single_mut().sections[0].value.push(event.char);
+        }
+    }
+}
+
+#[derive(Component)]
+pub struct LocationTarget {
+    location: Vec3,
+}
+
+pub fn add_location_target(
+    mut command: Commands,
+    events: EventReader<ConfirmEvent>,
+    query: Query<(Entity, &Player, Without<LocationTarget>)>,
+) {
+    if events.len() > 0 {
+        println!("confirm event trigger");
+
+        for (entity, _player, _) in query.iter() {
+            command.entity(entity).insert(LocationTarget {
+                location: Vec3::new(0.0, 0.0, 0.0),
+            });
+        }
+    }
+}
+
 pub fn move_player(
     time: Res<Time>,
     time_scale: Res<TimeScale>,
     mut mouse_motion_events: EventReader<MouseMotion>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut text_querys: ParamSet<(
-        Query<&mut Text, With<Ball>>,
-        Query<&mut Text>,
-    )>,
+    mut text_querys: ParamSet<(Query<&mut Text, With<Ball>>, Query<&mut Text>)>,
     player_query: Query<&Children, With<Player>>,
     mut query: Query<(&Player, &Controller, &mut MotionOverride, &mut Motion)>,
 ) {
@@ -95,22 +147,6 @@ pub fn move_player(
             .velocity
             .damp(velocity, damp, delta_seconds)
             .clamp_length_max(player.max_speed);
-    }
-
-    if keyboard_input.pressed(KeyCode::Space) {
-        info!("prepass space");
-        for text in text_querys.p0().iter() {
-            println!("ball text is {}", text.sections[0].value);
-        }
-
-        for children in player_query.iter() {
-            for &child in children.iter() {
-                if let Ok(text) = text_querys.p1().get_mut(child) {
-                    // text.sections[0].value = "New Text".to_string();
-                    println!("edit text is {}", text.sections[0].value);
-                }
-            }
-        }
     }
 }
 
